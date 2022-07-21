@@ -854,10 +854,11 @@ class TaskInstance(Base, LoggingMixin):
             TaskInstance.map_index == self.map_index,
         )
 
+        self.log.info("Locking for update")
         if lock_for_update:
             for attempt in run_with_db_retries(logger=self.log):
                 with attempt:
-                    ti: Optional[TaskInstance] = qry.with_for_update().first()
+                    ti: Optional[TaskInstance] = qry.with_for_update(of=TaskInstance).first()
         else:
             ti = qry.first()
         if ti:
@@ -1358,7 +1359,18 @@ class TaskInstance(Base, LoggingMixin):
         self.end_date = None
         if not test_mode:
             session.merge(self).task = task
-        session.commit()
+        
+        try:
+            session.commit()
+        except:
+            self.log.debug("Retrying commit")
+            from time import sleep
+            sleep(3)
+            try:
+                session.commit()
+            except:
+                self.log.debug("It's just not meant to be")
+
 
         # Closing all pooled connections to prevent
         # "max number of connections reached"

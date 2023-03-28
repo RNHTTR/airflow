@@ -153,7 +153,7 @@ class SchedulerJob(BaseJob):
         self._standalone_dag_processor = conf.getboolean("scheduler", "standalone_dag_processor")
         self._dag_stale_not_seen_duration = conf.getint("scheduler", "dag_stale_not_seen_duration")
 
-                # Since the functionality for stalled_task_timeout, task_adoption_timeout, and worker_pods_pending_timeout
+        # Since the functionality for stalled_task_timeout, task_adoption_timeout, and worker_pods_pending_timeout
         # are now handled by a single config (task_queued_timeout), we can't deprecate them as we normally would.
         # So, we'll read each config and take the max value in order to ensure we're not undercutting a legitimate
         # use of any of these configs.
@@ -185,7 +185,9 @@ class SchedulerJob(BaseJob):
                 stacklevel=2,
             )
         task_queued_timeout = conf.getfloat("scheduler", "task_queued_timeout")
-        self._task_queued_timeout = max(stalled_task_timeout, task_adoption_timeout, worker_pods_pending_timeout, task_queued_timeout)
+        self._task_queued_timeout = max(
+            stalled_task_timeout, task_adoption_timeout, worker_pods_pending_timeout, task_queued_timeout
+        )
 
         self.do_pickle = do_pickle
         super().__init__(*args, **kwargs)
@@ -344,7 +346,6 @@ class SchedulerJob(BaseJob):
         pool_num_starving_tasks: DefaultDict[str, int] = defaultdict(int)
 
         for loop_count in itertools.count(start=1):
-
             num_starved_pools = len(starved_pools)
             num_starved_dags = len(starved_dags)
             num_starved_tasks = len(starved_tasks)
@@ -924,7 +925,6 @@ class SchedulerJob(BaseJob):
 
         for loop_count in itertools.count(start=1):
             with Stats.timer("scheduler.scheduler_loop_duration") as timer:
-
                 if self.using_sqlite and self.processor_agent:
                     self.processor_agent.run_single_parsing_loop()
                     # For the sqlite case w/ 1 thread, wait until the processor
@@ -1109,7 +1109,6 @@ class SchedulerJob(BaseJob):
         )
 
         for dag_model in dag_models:
-
             dag = self.dagbag.get_dag(dag_model.dag_id, session=session)
             if not dag:
                 self.log.error("DAG '%s' not found in serialized_dag table", dag_model.dag_id)
@@ -1189,7 +1188,6 @@ class SchedulerJob(BaseJob):
             # instead of falling in a loop of Integrity Error.
             exec_date = exec_dates[dag.dag_id]
             if (dag.dag_id, exec_date) not in existing_dagruns:
-
                 previous_dag_run = (
                     session.query(DagRun)
                     .filter(

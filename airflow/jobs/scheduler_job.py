@@ -1465,7 +1465,8 @@ class SchedulerJob(BaseJob):
             tasks_stuck_in_queued_messages = []
             for ti in tasks_stuck_in_queued:
                 tasks_stuck_in_queued_messages.append(repr(ti))
-                ti.handle_failure()
+                msg = "TI %s was in the queued state for longer than %s.", repr(ti), self._task_queued_timeout
+                ti.handle_failure(error=msg)
             if tasks_stuck_in_queued_messages:
                 task_instance_str = "\n\t".join(tasks_stuck_in_queued_messages)
                 self.log.warning(

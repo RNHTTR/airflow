@@ -1478,6 +1478,7 @@ class SchedulerJob(BaseJob):
                             self._task_queued_timeout,
                         )
                         ti.handle_failure(error=msg, session=session)
+                        self.executor.cleanup_stuck_queued_task(ti)
                     if tasks_stuck_in_queued_messages:
                         task_instance_str = "\n\t".join(tasks_stuck_in_queued_messages)
                         self.log.warning(

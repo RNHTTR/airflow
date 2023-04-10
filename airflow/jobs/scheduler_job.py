@@ -886,7 +886,7 @@ class SchedulerJob(BaseJob):
 
         timers = EventScheduler()
 
-        # Check on start up, then every configured interval
+        # Check on start up, then check every configured interval
         self.adopt_or_reset_orphaned_tasks()
 
         timers.call_regular_interval(self._task_queued_timeout, self._fail_tasks_stuck_in_queued)

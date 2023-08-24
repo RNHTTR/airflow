@@ -451,9 +451,9 @@ Running Tests with provider packages
 
 Airflow 2.0 introduced the concept of splitting the monolithic Airflow package into separate
 providers packages. The main "apache-airflow" package contains the bare Airflow implementation,
-and additionally we have 70+ providers that we can install additionally to get integrations with
-external services. Those providers live in the same monorepo as Airflow, but we build separate
-packages for them and the main "apache-airflow" package does not contain the providers.
+and there are more than 70 additional providers that can be installed to integrate with
+external services. Such providers live in the same monorepo as Airflow but are built as 
+separate packages, distinct from the main "apache-airflow" package.
 
 Most of the development in Breeze happens by iterating on sources and when you run
 your tests during development, you usually do not want to build packages and install them separately.

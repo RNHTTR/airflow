@@ -15,21 +15,19 @@
     specific language governing permissions and limitations
     under the License.
 
-ERD Schema of the Database
-''''''''''''''''''''''''''
-
-Here is the current Database schema diagram.
+Airflow Database Entity Relationship Diagram
+''''''''''''''''''''''''''''''''''''''''''''
 
 .. warning::
 
-   The ER diagram shows the snapshot of the database structure valid for Airflow version |version| and it
-   should be treated as an internal detail. It might be changed at any time and you should not directly
-   access the database to retrieve information from it or modify the data - you should use
-   :doc:`stable-rest-api-ref` to do that instead.
-   The main purpose of this diagram is to help with troubleshooting and understanding of the
-   internal Airflow DB architecture in case you have any problems with the database - for example
-   when dealing with problems with migrations. See also :doc:`migrations-ref` for
-   list of detailed database migrations that are applied when running migration script and
+   The entity relationship diagram below shows the schema the Airflow database for Airflow version |version|, and it
+   should be treated as an internal detail. It might be changed at any time, and you should not directly
+   access the database to retrieve information from it or modify the data; instead, you should use the
+   :doc:`stable-rest-api-ref`.
+   The main purpose of this diagram is to help with troubleshooting and understanding the
+   internal Airflow DB architecture in case you have any problems with the database -- for example
+   when dealing with problems with migrations. See also :doc:`migrations-ref` for a
+   list of detailed database migrations that are applied when running the migration script and
    `db command <cli-and-env-variables-ref.html#db>`_ for the commands that you can use to manage
    the migrations.
 

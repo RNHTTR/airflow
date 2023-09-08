@@ -43,7 +43,10 @@ import yaml
 from packaging.version import parse as parse_version
 
 import airflow
-from airflow.configuration import AirflowConfigParser, retrieve_configuration_description
+from airflow.configuration import (
+    AirflowConfigParser,
+    retrieve_configuration_description,
+)
 
 sys.path.append(str(Path(__file__).parent / "exts"))
 
@@ -140,6 +143,7 @@ extensions = [
     "removemarktransform",
     "sphinx_copybutton",
     "airflow_intersphinx",
+    "sphinxcontrib.plantuml",
     "sphinxcontrib.spelling",
     "sphinx_airflow_theme",
     "redirects",
@@ -329,7 +333,11 @@ if PACKAGE_NAME == "apache-airflow":
         "installation/installing-from-sources.html",
     ]
 if PACKAGE_NAME.startswith("apache-airflow-providers"):
-    manual_substitutions_in_generated_html = ["example-dags.html", "operators.html", "index.html"]
+    manual_substitutions_in_generated_html = [
+        "example-dags.html",
+        "operators.html",
+        "index.html",
+    ]
 if PACKAGE_NAME == "docker-stack":
     # Replace "|version|" inside ```` quotes
     manual_substitutions_in_generated_html = ["build.html"]
@@ -355,7 +363,10 @@ html_use_index = True
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 html_show_copyright = False
 
-html_theme_options: dict[str, Any] = {"hide_website_buttons": True, "sidebar_includehidden": True}
+html_theme_options: dict[str, Any] = {
+    "hide_website_buttons": True,
+    "sidebar_includehidden": True,
+}
 
 html_theme_options["navbar_links"] = [
     {"href": "/community/", "text": "Community"},
@@ -410,22 +421,35 @@ airflow_version = parse_version(
 
 def get_configs_and_deprecations(
     package_name: str,
-) -> tuple[dict[str, dict[str, tuple[str, str, str]]], dict[str, dict[str, tuple[str, str, str]]]]:
+) -> tuple[dict[str, dict[str, tuple[str, str, str]]], dict[str, dict[str, tuple[str, str, str]]],]:
     deprecated_options: dict[str, dict[str, tuple[str, str, str]]] = defaultdict(dict)
     for (section, key), (
         (deprecated_section, deprecated_key, since_version)
     ) in AirflowConfigParser.deprecated_options.items():
-        deprecated_options[deprecated_section][deprecated_key] = section, key, since_version
+        deprecated_options[deprecated_section][deprecated_key] = (
+            section,
+            key,
+            since_version,
+        )
 
-    for (section, key), deprecated in AirflowConfigParser.many_to_one_deprecated_options.items():
+    for (
+        section,
+        key,
+    ), deprecated in AirflowConfigParser.many_to_one_deprecated_options.items():
         for deprecated_section, deprecated_key, since_version in deprecated:
-            deprecated_options[deprecated_section][deprecated_key] = section, key, since_version
+            deprecated_options[deprecated_section][deprecated_key] = (
+                section,
+                key,
+                since_version,
+            )
 
     if package_name == "apache-airflow":
         configs = retrieve_configuration_description(include_providers=False)
     else:
         configs = retrieve_configuration_description(
-            include_airflow=False, include_providers=True, selected_provider=package_name
+            include_airflow=False,
+            include_providers=True,
+            selected_provider=package_name,
         )
 
     # We want the default/example we show in the docs to reflect the value _after_
@@ -656,7 +680,10 @@ autodoc_typehints_format = "short"
 # be linked to in this documentation.
 # Inventories are only downloaded once by docs/exts/docs_build/fetch_inventories.py.
 intersphinx_mapping = {
-    pkg_name: (f"{THIRD_PARTY_INDEXES[pkg_name]}/", (f"{INVENTORY_CACHE_DIR}/{pkg_name}/objects.inv",))
+    pkg_name: (
+        f"{THIRD_PARTY_INDEXES[pkg_name]}/",
+        (f"{INVENTORY_CACHE_DIR}/{pkg_name}/objects.inv",),
+    )
     for pkg_name in [
         "boto3",
         "celery",
@@ -798,7 +825,12 @@ graphviz_output_format = "svg"
 # See: https://sphinxcontrib-redoc.readthedocs.io/en/stable/
 if PACKAGE_NAME == "apache-airflow":
     OPENAPI_FILE = os.path.join(
-        os.path.dirname(__file__), "..", "airflow", "api_connexion", "openapi", "v1.yaml"
+        os.path.dirname(__file__),
+        "..",
+        "airflow",
+        "api_connexion",
+        "openapi",
+        "v1.yaml",
     )
     redoc = [
         {

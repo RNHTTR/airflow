@@ -35,7 +35,6 @@ Here you can find detailed documentation about each one of the core concepts of 
 
     dags
     dag-run
-    debug
     tasks
     operators
     sensors
@@ -50,3 +49,12 @@ Here you can find detailed documentation about each one of the core concepts of 
     xcoms
     variables
     params
+
+**Debugging**
+
+.. toctree::
+    :titlesonly:
+    :maxdepth: 1
+
+    debug
+

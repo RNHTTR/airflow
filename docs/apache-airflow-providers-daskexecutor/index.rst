@@ -34,6 +34,7 @@
     :maxdepth: 1
     :caption: References
 
+    Executor Details <dask_executor>
     Configuration <configurations-ref>
     Python API <_api/airflow/providers/daskexecutor/index>
     PyPI Repository <https://pypi.org/project/apache-airflow-providers-daskexecutor/>

@@ -15,9 +15,6 @@
     specific language governing permissions and limitations
     under the License.
 
-
-.. _executor:DaskExecutor:
-
 Dask Executor
 =============
 
@@ -44,7 +41,7 @@ Next start at least one Worker on any machine that can connect to the host:
 
 Edit your ``airflow.cfg`` to set your executor to :class:`airflow.providers.daskexecutor.executors.dask_executor.DaskExecutor` and provide
 the Dask Scheduler address in the ``[dask]`` section. For more information on setting the configuration,
-see :doc:`../../howto/set-config`.
+see :doc:`apache-airflow:howto/set-config`.
 
 Please note:
 

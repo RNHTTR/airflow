@@ -29,6 +29,7 @@ from airflow.utils.state import TaskInstanceState
 
 if TYPE_CHECKING:
     from sqlalchemy.orm.session import Session
+    from werkzeug.datastructures import Range
 
     from airflow.models.taskinstance import TaskInstance
 
@@ -40,7 +41,7 @@ class TaskLogReader:
     """Time to sleep between loops while waiting for more logs"""
 
     def read_log_chunks(
-        self, ti: TaskInstance, try_number: int | None, metadata
+        self, ti: TaskInstance, try_number: int | None, metadata, range: Range | None = None
     ) -> tuple[list[tuple[tuple[str, str]]], dict[str, str]]:
         """
         Read chunks of Task Instance logs.
@@ -49,6 +50,7 @@ class TaskLogReader:
         :param try_number: If provided, logs for the given try will be returned.
             Otherwise, logs from all attempts are returned.
         :param metadata: A dictionary containing information about how to read the task log
+        :param range: HTTP Range header for reading chunks of remote logs
 
         The following is an example of how to use this method to read log:
 
@@ -61,7 +63,11 @@ class TaskLogReader:
         contain information about the task log which can enable you read logs to the
         end.
         """
-        logs, metadatas = self.log_handler.read(ti, try_number, metadata=metadata)
+        # Check if range exists in case log handler doesn't support the range header
+        if range is not None:
+            logs, metadatas = self.log_handler.read(ti, try_number, metadata=metadata, range=str(range))
+        else:
+            logs, metadatas = self.log_handler.read(ti, try_number, metadata=metadata)
         metadata = metadatas[0]
         return logs, metadata
 

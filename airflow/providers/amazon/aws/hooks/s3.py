@@ -950,7 +950,7 @@ class S3Hook(AwsBaseHook):
 
     @unify_bucket_name_and_key
     @provide_bucket_name
-    def read_key(self, key: str, bucket_name: str | None = None) -> str:
+    def read_key(self, key: str, bucket_name: str | None = None, range: str | None = None) -> str:
         """
         Read a key from S3.
 
@@ -962,7 +962,11 @@ class S3Hook(AwsBaseHook):
         :return: the content of the key
         """
         obj = self.get_key(key, bucket_name)
-        return obj.get()["Body"].read().decode("utf-8")
+        if range is not None:
+            content = obj.get(Range=range)["Body"].read().decode("utf-8")
+        else:
+            content = obj.get()["Body"].read().decode("utf-8")
+        return content
 
     @unify_bucket_name_and_key
     @provide_bucket_name

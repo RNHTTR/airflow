@@ -23,6 +23,7 @@ from itsdangerous.exc import BadSignature
 from itsdangerous.url_safe import URLSafeSerializer
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
+from werkzeug.datastructures import ContentRange
 
 from airflow.api_connexion import security
 from airflow.api_connexion.exceptions import BadRequest, NotFound
@@ -103,11 +104,25 @@ def get_log(
     # return_type would be either the above two or None
     logs: Any
     if return_type == "application/json" or return_type is None:  # default
-        logs, metadata = task_log_reader.read_log_chunks(ti, task_try_number, metadata, range=request.range)
+        content_range: ContentRange | None = None
+        file_size: int | None = None
+        paginate_log_file = True  # TODO: Make this a config
+        if paginate_log_file:
+            file_size = task_log_reader.get_file_size(ti=ti, try_number=task_try_number)
+            chunk_size = 1024 * 1  # TODO: Make this a config
+            if request.range is not None:
+                content_range = request.range.make_content_range(length=file_size)
+            else:
+                content_range = ContentRange("bytes", 0, chunk_size - 1, length=file_size)
+
+        logs, metadata = task_log_reader.read_log_chunks(ti, task_try_number, metadata, range=content_range)
         logs = logs[0] if task_try_number is not None else logs
         # we must have token here, so we can safely ignore it
         token = URLSafeSerializer(key).dumps(metadata)  # type: ignore[assignment]
-        return logs_schema.dump(LogResponseObject(continuation_token=token, content=logs))
+        return logs_schema.dump(
+            LogResponseObject(continuation_token=token, content=logs, file_size=file_size)
+        )
+
     # text/plain. Stream
     logs = task_log_reader.read_log_stream(ti, task_try_number, metadata)
 

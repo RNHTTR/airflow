@@ -26,6 +26,7 @@ class LogsSchema(Schema):
 
     content = fields.Str(dump_only=True)
     continuation_token = fields.Str(dump_only=True)
+    file_size = fields.Int(dump_only=True)
 
 
 class LogResponseObject(NamedTuple):
@@ -33,6 +34,7 @@ class LogResponseObject(NamedTuple):
 
     content: str
     continuation_token: str | None
+    file_size: int | None
 
 
 logs_schema = LogsSchema()

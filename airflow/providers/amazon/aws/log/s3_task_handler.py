@@ -25,6 +25,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from airflow.configuration import conf
+from airflow.models.taskinstance import TaskInstance
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.utils.log.file_task_handler import FileTaskHandler
 from airflow.utils.log.logging_mixin import LoggingMixin
@@ -110,6 +111,13 @@ class S3TaskHandler(FileTaskHandler, LoggingMixin):
 
         # Mark closed so we don't double write if close is called twice
         self.closed = True
+
+    def _get_file_size(self, ti: TaskInstance, try_number: int | None) -> int:
+        worker_log_rel_path = self._render_filename(ti, try_number)
+        bucket, prefix = self.hook.parse_s3_url(s3url=os.path.join(self.remote_base, worker_log_rel_path))
+        key = self.hook.list_keys(bucket_name=bucket, prefix=prefix)[0]
+
+        return self.hook.head_object(key=key, bucket_name=bucket)["ContentLength"]
 
     def _read_remote_logs(self, ti, try_number, metadata=None) -> tuple[list[str], list[str]]:
         # Explicitly getting log relative path is necessary as the given

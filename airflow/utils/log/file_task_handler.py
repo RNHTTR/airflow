@@ -583,6 +583,14 @@ class FileTaskHandler(logging.Handler):
                 logger.exception("Could not read served logs")
         return messages, logs
 
+    def _get_file_size(self, ti: TaskInstance, try_number: int | None):
+        """
+        Implement in subclasses to read from the remote service.
+
+        This method should return a log file's size in bytes
+        """
+        raise NotImplementedError
+
     def _read_remote_logs(self, ti, try_number, metadata=None) -> tuple[list[str], list[str]]:
         """
         Implement in subclasses to read from the remote service.

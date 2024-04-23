@@ -40,6 +40,9 @@ class TaskLogReader:
     STREAM_LOOP_SLEEP_SECONDS = 1
     """Time to sleep between loops while waiting for more logs"""
 
+    def get_file_size(self, ti: TaskInstance, try_number: int):
+        return self.log_handler.get_file_size(ti, try_number)
+
     def read_log_chunks(
         self, ti: TaskInstance, try_number: int | None, metadata, range: Range | None = None
     ) -> tuple[list[tuple[tuple[str, str]]], dict[str, str]]:
